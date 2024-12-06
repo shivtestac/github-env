@@ -29,10 +29,7 @@ jobs:
         echo "${{ vars.MYSQL_ROOT_PASSWORD }}"
         chmod 600 private_key
       
-    - name: Print environment variables (Sensitive data will be masked)
-      run: |
-        echo "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
-        
+
     - name: Clear and recreate remote directory
       run: ssh -o StrictHostKeyChecking=no -i private_key root@$REMOTE_HOST "rm -rf $REMOTE_DIR && mkdir -p $REMOTE_DIR && echo 'Directory $REMOTE_DIR cleaned and recreated.'"
 
@@ -44,8 +41,8 @@ jobs:
     - name: SSH into remote server and deploy
       run: |
         ssh -o StrictHostKeyChecking=no -i private_key root@$REMOTE_HOST
-          export MYSQL_ROOT_PASSWORD=/${{ MYSQL_ROOT_PASSWORD }}
-          export MYSQL_USERNAME=/${{ MYSQL_USERNAME }}
+          export ${{ vars.MYSQL_ROOT_PASSWORD }} = /${{ MYSQL_ROOT_PASSWORD }}
+          export ${{ vars.MYSQL_USERNAME }} = /${{ MYSQL_USERNAME }}
           cd $REMOTE_DIR
           docker build -t my-mysql-image .
           docker run -d --name my-mysql-container -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -e MYSQL_USER=$MYSQL_USERNAME -p 3306:3306 my-mysql-image:latest
