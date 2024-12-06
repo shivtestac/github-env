@@ -30,7 +30,8 @@ jobs:
       run: |
         echo "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
         echo "MYSQL_USERNAME=${MYSQL_USERNAME}"
-
+        echo "$MYSQL_ROOT_PASSWORD" > ss
+        echo "ss is $ss"
         
     - name: Clear and recreate remote directory
       run: ssh -o StrictHostKeyChecking=no -i private_key root@$REMOTE_HOST "rm -rf $REMOTE_DIR && mkdir -p $REMOTE_DIR && echo 'Directory $REMOTE_DIR cleaned and recreated.'"
@@ -41,22 +42,11 @@ jobs:
 
     - name: SSH into remote server and deploy
       run: |
-        ssh -o StrictHostKeyChecking=no -i private_key root@$REMOTE_HOST << EOF
+        ssh -o StrictHostKeyChecking=no -i private_key root@$REMOTE_HOST
           export MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
           export MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
           
           # Print the environment variables in the remote environment
           echo "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD" > $REMOTE_DIR/envfile
           echo "MYSQL_USERNAME=$MYSQL_USERNAME" >> $REMOTE_DIR/envfile
-          
-          cd $REMOTE_DIR
 
-          # Build the Docker image
-          docker build -t my-mysql-image .
-
-          # Run the container, passing the environment variables at runtime
-          docker run -d --name my-mysql-container \
-            -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD \
-            -e MYSQL_USER=$MYSQL_USERNAME \
-            -p 3306:3306 my-mysql-image:latest
-        EOF
