@@ -18,7 +18,7 @@ jobs:
       PRIVATE_KEY: ${{ secrets.KEY }}  # GitHub secret for private key
 
     steps:
-    - name: Checkout repository
+    - name: Checkout repositoryz
       uses: actions/checkout@v3
 
     - name: Set up SSH key
@@ -29,9 +29,8 @@ jobs:
     - name: Print environment variables (Sensitive data will be masked)
       run: |
         echo "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
-        echo "MYSQL_USERNAME=${MYSQL_USERNAME}"
-        echo "$MYSQL_ROOT_PASSWORD" > ss
-        echo "ss is $ss"
+        echo ${{ secrets.MYSQL_USERNAME }}
+
         
     - name: Clear and recreate remote directory
       run: ssh -o StrictHostKeyChecking=no -i private_key root@$REMOTE_HOST "rm -rf $REMOTE_DIR && mkdir -p $REMOTE_DIR && echo 'Directory $REMOTE_DIR cleaned and recreated.'"
@@ -39,14 +38,12 @@ jobs:
     - name: Copy Dockerfile to remote server
       run: |
         scp -o StrictHostKeyChecking=no -i private_key Dockerfile root@$REMOTE_HOST:$REMOTE_DIR/
+        scp -o StrictHostKeyChecking=no -i private_key ss root@$REMOTE_HOST:$REMOTE_DIR/
 
     - name: SSH into remote server and deploy
       run: |
         ssh -o StrictHostKeyChecking=no -i private_key root@$REMOTE_HOST
           export MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
           export MYSQL_USERNAME=${{ secrets.MYSQL_USERNAME }}
-          
-          # Print the environment variables in the remote environment
-          echo "MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD" > $REMOTE_DIR/envfile
-          echo "MYSQL_USERNAME=$MYSQL_USERNAME" >> $REMOTE_DIR/envfile
+
 
