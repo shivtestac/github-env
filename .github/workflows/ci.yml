@@ -40,7 +40,7 @@ jobs:
 
     - name: SSH into remote server and deploy
       run: |
-        ssh -o StrictHostKeyChecking=no -i private_key root@$REMOTE_HOST << 'EOF'
+        ssh -o StrictHostKeyChecking=no -i private_key root@$REMOTE_HOST << EOF
           export MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
           export MYSQL_USERNAME=$MYSQL_USERNAME
           cd $REMOTE_DIR
