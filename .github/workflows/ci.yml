@@ -38,12 +38,12 @@ jobs:
         scp -o StrictHostKeyChecking=no -i private_key Dockerfile root@$REMOTE_HOST:$REMOTE_DIR/
         scp -o StrictHostKeyChecking=no -i private_key ss root@$REMOTE_HOST:$REMOTE_DIR/
 
-    - name: SSH into remote server and deploy
-      run: |
-        ssh -o StrictHostKeyChecking=no -i private_key root@$REMOTE_HOST
-          export ${{ vars.MYSQL_ROOT_PASSWORD }} = /${{ MYSQL_ROOT_PASSWORD }}
-          export ${{ vars.MYSQL_USERNAME }} = /${{ MYSQL_USERNAME }}
-          cd $REMOTE_DIR
-          docker build -t my-mysql-image .
-          docker run -d --name my-mysql-container -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -e MYSQL_USER=$MYSQL_USERNAME -p 3306:3306 my-mysql-image:latest
+#   - name: SSH into remote server and deploy
+# run: |
+#   ssh -o StrictHostKeyChecking=no -i private_key root@$REMOTE_HOST
+#     export ${{ vars.MYSQL_ROOT_PASSWORD }} = /${{ MYSQL_ROOT_PASSWORD }}
+#     export ${{ vars.MYSQL_USERNAME }} = /${{ MYSQL_USERNAME }}
+#     cd $REMOTE_DIR
+#     docker build -t my-mysql-image .
+#     docker run -d --name my-mysql-container -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -e MYSQL_USER=$MYSQL_USERNAME -p 3306:3306 my-mysql-image:latest
 
