@@ -13,18 +13,20 @@ jobs:
     env:
       REMOTE_HOST: 125.17.72.92  # IP address of the remote server
       REMOTE_DIR: /gitlab/lo/data  # Directory where files should be copied
-      MYSQL_ROOT_PASSWORD: ${{ vars.MYSQL_ROOT_PASSWORD }}  # GitHub secret for MySQL root password
-      MYSQL_USERNAME: ${{ vars.MYSQL_USERNAME }}  # GitHub secret for MySQL username
+     # MYSQL_ROOT_PASSWORD: ${{ vars.MYSQL_ROOT_PASSWORD }}  # GitHub secret for MySQL root password
+     # MYSQL_USERNAME: ${{ vars.MYSQL_USERNAME }}  # GitHub secret for MySQL username
       PRIVATE_KEY: ${{ secrets.KEY }}  # GitHub secret for private key
 
     steps:
     - name: Checkout repositoryz
       uses: actions/checkout@v3
 
+    
+
     - name: Set up SSH key
       run: |
         echo "$PRIVATE_KEY" > private_key
-        echo "MYSQL_ROOT_PASSWORD" > ss
+        echo "${{ vars.MYSQL_ROOT_PASSWORD }}"
         chmod 600 private_key
       
     - name: Print environment variables (Sensitive data will be masked)
