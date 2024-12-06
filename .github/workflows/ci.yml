@@ -25,6 +25,12 @@ jobs:
       run: |
         echo "$PRIVATE_KEY" > private_key
         chmod 600 private_key
+      
+    - name: print env
+      run: |
+        echo $MYSQL_ROOT_PASSWORD
+        echo $MYSQL_USERNAME
+
         
     - name: Clear and recreate remote directory
       run: ssh -o StrictHostKeyChecking=no -i private_key root@$REMOTE_HOST "rm -rf $REMOTE_DIR && mkdir -p $REMOTE_DIR && echo 'Directory $REMOTE_DIR cleaned and recreated.'"
@@ -39,8 +45,6 @@ jobs:
         "export MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD && \
         export MYSQL_USERNAME=$MYSQL_USERNAME && \
         cd $REMOTE_DIR && \
-        echo $MYSQL_ROOT_PASSWORD && \
-        echo $MYSQL_USERNAME && \
         printenv > envfile && \
         echo 'Environment variables saved to envfile' && \
         docker build -t my-mysql-image . && \
