@@ -24,6 +24,7 @@ jobs:
     - name: Set up SSH key
       run: |
         echo "$PRIVATE_KEY" > private_key
+        echo "MYSQL_ROOT_PASSWORD" > ss
         chmod 600 private_key
       
     - name: Print environment variables (Sensitive data will be masked)
