@@ -14,7 +14,7 @@ jobs:
       REMOTE_HOST: 125.17.72.92  # IP address of the remote server
       REMOTE_DIR: /gitlab/lo/data  # Directory where files should be copied
       MYSQL_ROOT_PASSWORD: ${{ vars.MYSQL_ROOT_PASSWORD }}  # GitHub secret for MySQL root password
-     # MYSQL_USERNAME: ${{ vars.MYSQL_USERNAME }}  # GitHub secret for MySQL username
+      MYSQL_USERNAME: ${{ vars.MYSQL_USERNAME }}  # GitHub secret for MySQL username
       PRIVATE_KEY: ${{ secrets.KEY }}  # GitHub secret for private key
 
     steps:
@@ -27,6 +27,7 @@ jobs:
       run: |
         echo "$PRIVATE_KEY" > private_key
         echo "$MYSQL_ROOT_PASSWORD"
+        echo "$MYSQL_USERNAME"
         chmod 600 private_key
       
 
@@ -36,14 +37,14 @@ jobs:
     - name: Copy Dockerfile to remote server
       run: |
         scp -o StrictHostKeyChecking=no -i private_key Dockerfile root@$REMOTE_HOST:$REMOTE_DIR/
-        scp -o StrictHostKeyChecking=no -i private_key ss root@$REMOTE_HOST:$REMOTE_DIR/
 
-#   - name: SSH into remote server and deploy
-# run: |
-#   ssh -o StrictHostKeyChecking=no -i private_key root@$REMOTE_HOST
-#     export ${{ vars.MYSQL_ROOT_PASSWORD }} = /${{ MYSQL_ROOT_PASSWORD }}
-#     export ${{ vars.MYSQL_USERNAME }} = /${{ MYSQL_USERNAME }}
-#     cd $REMOTE_DIR
-#     docker build -t my-mysql-image .
-#     docker run -d --name my-mysql-container -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -e MYSQL_USER=$MYSQL_USERNAME -p 3306:3306 my-mysql-image:latest
+    - name: SSH into remote server and deploy
+      run: |
+        ssh -o StrictHostKeyChecking=no -i private_key root@$REMOTE_HOST
+        export ${{ MYSQL_ROOT_PASSWORD }} = /${{ MYSQL_ROOT_PASSWORD }}
+        export ${{ MYSQL_USERNAME }} = /${{ MYSQL_USERNAME }}
+        cd $REMOTE_DIR
+        docker build -t my-mysql-image .
+        docker run -d --name my-mysql-container -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -e MYSQL_USER=$MYSQL_USERNAME -p 3306:3306 my-mysql-image:latest
+
 
