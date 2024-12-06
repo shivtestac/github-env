@@ -1,0 +1,48 @@
+# .github/workflows/deploy.yml
+name: Deploy MySQL Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      REMOTE_HOST: 125.17.72.92  # IP address of the remote server
+      REMOTE_DIR: /gitlab/lo/data  # Directory where files should be copied
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}  # GitHub secret for MySQL root password
+      MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}  # GitHub secret for MySQL username
+      PRIVATE_KEY: ${{ secrets.KEY }}  # GitHub secret for private key
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up SSH key
+      run: |
+        echo "$PRIVATE_KEY" > private_key
+        chmod 600 private_key
+
+    - name: Copy Dockerfile to remote server
+      run: |
+        scp -o StrictHostKeyChecking=no -i private_key Dockerfile root@$REMOTE_HOST:$REMOTE_DIR/
+
+    - name: SSH into remote server and deploy
+      run: |
+        ssh -o StrictHostKeyChecking=no -i private_key root@$REMOTE_HOST << EOF
+          export MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+          export MYSQL_USERNAME=$MYSQL_USERNAME
+          cd $REMOTE_DIR
+
+          # Build the Docker image
+          docker build -t my-mysql-image .
+
+          # Run the container, passing the environment variables at runtime
+          docker run -d --name my-mysql-container \
+            -e MYSQL_ROOT_PASSWORD=\$MYSQL_ROOT_PASSWORD \
+            -e MYSQL_USER=\$MYSQL_USERNAME \
+            -p 3306:3306 my-mysql-image
+        EOF
