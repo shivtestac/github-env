@@ -47,5 +47,5 @@ jobs:
           docker run -d --name my-mysql-container \
             -e MYSQL_ROOT_PASSWORD=\$MYSQL_ROOT_PASSWORD \
             -e MYSQL_USER=\$MYSQL_USERNAME \
-            -p 3306:3306 my-mysql-image
+            -p 3306:3306 my-mysql-image:latest
         EOF
