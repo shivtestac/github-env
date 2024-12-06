@@ -13,8 +13,8 @@ jobs:
     env:
       REMOTE_HOST: 125.17.72.92  # IP address of the remote server
       REMOTE_DIR: /gitlab/lo/data  # Directory where files should be copied
-      MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }}  # GitHub secret for MySQL root password
-      MYSQL_USERNAME: ${{ env.MYSQL_USERNAME }}  # GitHub secret for MySQL username
+      MYSQL_ROOT_PASSWORD: ${{ MYSQL_ROOT_PASSWORD }}  # GitHub secret for MySQL root password
+      MYSQL_USERNAME: ${{ MYSQL_USERNAME }}  # GitHub secret for MySQL username
       PRIVATE_KEY: ${{ secrets.KEY }}  # GitHub secret for private key
 
     steps:
